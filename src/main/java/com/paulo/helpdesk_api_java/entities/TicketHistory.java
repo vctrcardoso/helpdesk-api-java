@@ -34,13 +34,15 @@ public class TicketHistory {
     private User actor;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 32)
     private TicketHistoryType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32)
     private TicketStatus previousStatus;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32)
     private TicketStatus newStatus;
 
     @Column(nullable = false, length = 500)

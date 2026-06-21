@@ -38,11 +38,14 @@ public class Ticket implements Serializable {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
     private TicketStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
     private TicketPriority priority;
 
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     private Instant updatedAt;
@@ -50,8 +53,8 @@ public class Ticket implements Serializable {
     private Instant closedAt;
 
     
-    @ManyToOne
-    @JoinColumn(name = "client_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "client_id", nullable = false)
     private User client;
 
     @ManyToOne

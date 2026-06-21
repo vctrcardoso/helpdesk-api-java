@@ -24,6 +24,7 @@ API REST para gerenciamento de tickets de suporte, construída com Java, Spring 
 - Spring Boot 4
 - Spring Security
 - Spring Data JPA
+- Flyway
 - PostgreSQL 18
 - JWT
 - Springdoc OpenAPI
@@ -173,6 +174,31 @@ Para executar os testes:
 ```bash
 ./mvnw test
 ```
+
+## Versionamento do banco
+
+O schema é gerenciado pelo Flyway. As migrations ficam em:
+
+```text
+src/main/resources/db/migration
+```
+
+A migration inicial é:
+
+```text
+V1__create_initial_schema.sql
+```
+
+O Hibernate está configurado com `ddl-auto=validate`: ele apenas verifica se as entidades estão compatíveis com o schema, sem criar ou alterar tabelas.
+
+Para mudanças futuras, não edite uma migration já aplicada. Crie uma nova versão:
+
+```text
+V2__add_ticket_attachment.sql
+V3__create_sla_policy.sql
+```
+
+O Flyway executa automaticamente as migrations pendentes durante a inicialização da aplicação.
 
 ## Autenticação
 
@@ -410,7 +436,6 @@ A suíte atual cobre:
 
 ## Melhorias futuras
 
-- Migrations Flyway versionadas.
 - Testes de integração com Testcontainers.
 - Upload de anexos.
 - SLA e notificações.
