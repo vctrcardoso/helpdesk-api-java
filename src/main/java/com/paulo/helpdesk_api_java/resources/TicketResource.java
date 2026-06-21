@@ -1,5 +1,6 @@
 package com.paulo.helpdesk_api_java.resources;
 
+import com.paulo.helpdesk_api_java.config.ApiPaths;
 import com.paulo.helpdesk_api_java.dto.ticket.TicketAssignDTO;
 import com.paulo.helpdesk_api_java.dto.ticket.TicketCreateDTO;
 import com.paulo.helpdesk_api_java.dto.ticket.TicketResponseDTO;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tickets")
+@RequestMapping(ApiPaths.TICKETS)
 @Tag(name = "Tickets", description = "Abertura, consulta e atribuição de tickets")
 public class TicketResource {
 

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,6 +27,9 @@ public class OpenApiConfig {
                                 .name("Paulo"))
                         .license(new License()
                                 .name("MIT")))
+                .addServersItem(new Server()
+                        .url("/")
+                        .description("Servidor atual"))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME))
                 .components(new Components()
                         .addSecuritySchemes(SECURITY_SCHEME, new SecurityScheme()

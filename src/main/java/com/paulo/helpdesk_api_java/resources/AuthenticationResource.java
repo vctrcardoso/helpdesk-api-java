@@ -1,5 +1,6 @@
 package com.paulo.helpdesk_api_java.resources;
 
+import com.paulo.helpdesk_api_java.config.ApiPaths;
 import com.paulo.helpdesk_api_java.dto.auth.LoginDTO;
 import com.paulo.helpdesk_api_java.dto.auth.LoginResponseDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping(ApiPaths.AUTH)
 @Tag(name = "Autenticação", description = "Cadastro, login e emissão de token JWT")
 public class AuthenticationResource {
 

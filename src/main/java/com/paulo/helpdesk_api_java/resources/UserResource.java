@@ -1,5 +1,6 @@
 package com.paulo.helpdesk_api_java.resources;
 
+import com.paulo.helpdesk_api_java.config.ApiPaths;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserResponseDTO;
 import com.paulo.helpdesk_api_java.services.UserService;
@@ -14,7 +15,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/users")
+@RequestMapping(ApiPaths.USERS)
 @Tag(name = "Usuários", description = "Gerenciamento de usuários")
 public class UserResource {
 
