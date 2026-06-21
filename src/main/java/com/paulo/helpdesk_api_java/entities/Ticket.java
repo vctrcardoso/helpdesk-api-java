@@ -8,6 +8,7 @@ import com.paulo.helpdesk_api_java.entities.enums.TicketPriority;
 import com.paulo.helpdesk_api_java.entities.enums.TicketStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +31,10 @@ public class Ticket implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String title;
 
+    @Column(nullable = false, length = 1000)
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -152,10 +155,6 @@ public class Ticket implements Serializable {
     @PreUpdate
     public void preUpdate() {
         updatedAt = Instant.now();
-
-        if (status == TicketStatus.CLOSED || status == TicketStatus.RESOLVED) {
-            closedAt = Instant.now();
-        }
     }
 
     @Override

@@ -13,6 +13,8 @@ public record TicketResponseDTO(
         TicketStatus status,
         TicketPriority priority,
         Instant createdAt,
+        Instant updatedAt,
+        Instant closedAt,
 
         Long clientId,
         String clientName,
@@ -29,6 +31,8 @@ public record TicketResponseDTO(
                 ticket.getStatus(),
                 ticket.getPriority(),
                 ticket.getCreatedAt(),
+                ticket.getUpdatedAt(),
+                ticket.getClosedAt(),
 
                 ticket.getClient() != null ? ticket.getClient().getId() : null,
                 ticket.getClient() != null ? ticket.getClient().getName() : null,
