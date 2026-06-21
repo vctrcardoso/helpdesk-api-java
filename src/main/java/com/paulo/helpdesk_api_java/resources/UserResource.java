@@ -2,8 +2,6 @@ package com.paulo.helpdesk_api_java.resources;
 
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserResponseDTO;
-import com.paulo.helpdesk_api_java.entities.User;
-import com.paulo.helpdesk_api_java.repositories.UserRepository;
 import com.paulo.helpdesk_api_java.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

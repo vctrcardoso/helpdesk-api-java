@@ -6,7 +6,6 @@ import com.paulo.helpdesk_api_java.entities.User;
 import com.paulo.helpdesk_api_java.entities.enums.UserRoles;
 import com.paulo.helpdesk_api_java.repositories.UserRepository;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
