@@ -1,6 +1,7 @@
 package com.paulo.helpdesk_api_java.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.paulo.helpdesk_api_java.dto.auth.RegisterDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.entities.enums.UserRoles;
 import jakarta.persistence.*;
@@ -64,6 +65,15 @@ public class User implements UserDetails {
         user.setPassword(encryptedPassword);
         user.setRole(UserRoles.valueOf(data.role()));
 
+        return user;
+    }
+
+    public static User fromRegisterDTO(RegisterDTO data, String encryptedPassword) {
+        User user = new User();
+        user.setName(data.name());
+        user.setEmail(data.email());
+        user.setPassword(encryptedPassword);
+        user.setRole(UserRoles.ROLE_USER);
         return user;
     }
 

@@ -1,9 +1,10 @@
 package com.paulo.helpdesk_api_java.resources;
 
 import com.paulo.helpdesk_api_java.config.ApiPaths;
+import com.paulo.helpdesk_api_java.dto.auth.AuthResponseDTO;
 import com.paulo.helpdesk_api_java.dto.auth.LoginDTO;
-import com.paulo.helpdesk_api_java.dto.auth.LoginResponseDTO;
-import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
+import com.paulo.helpdesk_api_java.dto.auth.RefreshTokenRequestDTO;
+import com.paulo.helpdesk_api_java.dto.auth.RegisterDTO;
 import com.paulo.helpdesk_api_java.services.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -29,16 +30,30 @@ public class AuthenticationResource {
     @PostMapping("/register")
     @Operation(summary = "Cadastrar usuário", description = "Cria uma nova conta de usuário.")
     @SecurityRequirements
-    public ResponseEntity<Void> register(@RequestBody @Valid UserCreateDTO data) {
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterDTO data) {
         service.register(data);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/login")
     @Operation(summary = "Autenticar usuário", description = "Valida as credenciais e retorna um token JWT.")
     @SecurityRequirements
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginDTO data) {
-        String login = service.login(data);
-        return ResponseEntity.ok(new LoginResponseDTO(login));
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginDTO data) {
+        return ResponseEntity.ok(service.login(data));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "Renovar sessão", description = "Rotaciona o refresh token e emite um novo par de tokens.")
+    @SecurityRequirements
+    public ResponseEntity<AuthResponseDTO> refresh(@RequestBody @Valid RefreshTokenRequestDTO data) {
+        return ResponseEntity.ok(service.refresh(data.refreshToken()));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Encerrar sessão", description = "Revoga o refresh token informado.")
+    @SecurityRequirements
+    public ResponseEntity<Void> logout(@RequestBody @Valid RefreshTokenRequestDTO data) {
+        service.logout(data.refreshToken());
+        return ResponseEntity.noContent().build();
     }
 }

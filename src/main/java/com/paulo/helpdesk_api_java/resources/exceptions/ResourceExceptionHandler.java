@@ -1,6 +1,7 @@
 package com.paulo.helpdesk_api_java.resources.exceptions;
 
 import com.paulo.helpdesk_api_java.services.exceptions.BusinessRuleException;
+import com.paulo.helpdesk_api_java.services.exceptions.InvalidRefreshTokenException;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceConflictException;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceNotFoundException;
 import com.paulo.helpdesk_api_java.services.exceptions.TokenGenerationException;
@@ -119,6 +120,13 @@ public class ResourceExceptionHandler {
             BadCredentialsException exception, HttpServletRequest request) {
         return build(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS",
                 "E-mail ou senha inválidos.", request, List.of());
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<StandardError> handleInvalidRefreshToken(
+            InvalidRefreshTokenException exception, HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, "INVALID_REFRESH_TOKEN",
+                exception.getMessage(), request, List.of());
     }
 
     @ExceptionHandler(AccessDeniedException.class)

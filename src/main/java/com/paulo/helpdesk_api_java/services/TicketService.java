@@ -12,6 +12,7 @@ import com.paulo.helpdesk_api_java.repositories.UserRepository;
 import com.paulo.helpdesk_api_java.services.exceptions.BusinessRuleException;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceConflictException;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,10 +28,7 @@ public class TicketService {
         this.userRepository = userRepository;
     }
 
-    public TicketResponseDTO insert(TicketCreateDTO dto) {
-        User client = userRepository.findById(dto.clientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", dto.clientId()));
-
+    public TicketResponseDTO insert(TicketCreateDTO dto, User client) {
         if (client.getRole() != UserRoles.ROLE_USER) {
             throw new BusinessRuleException(
                     "TICKET_CLIENT_INVALID_ROLE",
@@ -49,16 +47,28 @@ public class TicketService {
         return new TicketResponseDTO(savedTicket);
     }
 
-    public List<TicketResponseDTO> findAll() {
-        return ticketRepository.findAll()
+    public List<TicketResponseDTO> findAll(User authenticatedUser) {
+        List<Ticket> tickets = authenticatedUser.getRole() == UserRoles.ROLE_ADMIN
+                ? ticketRepository.findAll()
+                : ticketRepository.findAllByClientId(authenticatedUser.getId());
+
+        return tickets
                 .stream()
                 .map(TicketResponseDTO::new)
                 .toList();
     }
 
-    public TicketResponseDTO findById(Long id) {
+    public TicketResponseDTO findById(Long id, User authenticatedUser) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket", id));
+
+        boolean isAdmin = authenticatedUser.getRole() == UserRoles.ROLE_ADMIN;
+        boolean isOwner = ticket.getClient() != null
+                && ticket.getClient().getId().equals(authenticatedUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new AccessDeniedException("O usuário não possui acesso a este ticket.");
+        }
 
         return new TicketResponseDTO(ticket);
     }

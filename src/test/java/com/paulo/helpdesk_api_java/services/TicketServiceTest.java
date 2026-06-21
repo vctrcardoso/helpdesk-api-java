@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,11 +44,10 @@ class TicketServiceTest {
         TicketCreateDTO dto = new TicketCreateDTO(
                 "Falha no sistema",
                 "Descrição detalhada da falha",
-                TicketPriority.HIGH,
-                1L);
+                TicketPriority.HIGH);
 
         BusinessRuleException exception =
-                assertThrows(BusinessRuleException.class, () -> service.insert(dto));
+                assertThrows(BusinessRuleException.class, () -> service.insert(dto, admin));
 
         assertEquals("TICKET_CLIENT_INVALID_ROLE", exception.getCode());
     }
@@ -57,7 +57,7 @@ class TicketServiceTest {
         when(ticketRepository.findById(99L)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception =
-                assertThrows(ResourceNotFoundException.class, () -> service.findById(99L));
+                assertThrows(ResourceNotFoundException.class, () -> service.findById(99L, user(1L, UserRoles.ROLE_USER)));
 
         assertEquals("Ticket não encontrado(a) com identificador: 99", exception.getMessage());
     }
@@ -78,6 +78,29 @@ class TicketServiceTest {
                 () -> service.assignAttendant(10L, new TicketAssignDTO(3L)));
 
         assertEquals("TICKET_ALREADY_ASSIGNED", exception.getCode());
+    }
+
+    @Test
+    void regularUserMustOnlyListOwnTickets() {
+        User client = user(4L, UserRoles.ROLE_USER);
+        Ticket ticket = new Ticket();
+        ticket.setClient(client);
+        when(ticketRepository.findAllByClientId(4L)).thenReturn(java.util.List.of(ticket));
+
+        assertEquals(1, service.findAll(client).size());
+    }
+
+    @Test
+    void regularUserCannotReadAnotherClientsTicket() {
+        User owner = user(4L, UserRoles.ROLE_USER);
+        User anotherUser = user(5L, UserRoles.ROLE_USER);
+        Ticket ticket = new Ticket();
+        ticket.setClient(owner);
+        when(ticketRepository.findById(10L)).thenReturn(Optional.of(ticket));
+
+        assertTrue(assertThrows(
+                org.springframework.security.access.AccessDeniedException.class,
+                () -> service.findById(10L, anotherUser)).getMessage().contains("não possui acesso"));
     }
 
     private User user(Long id, UserRoles role) {

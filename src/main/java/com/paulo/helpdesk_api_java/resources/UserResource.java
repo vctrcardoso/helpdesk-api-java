@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(ApiPaths.USERS)
 @Tag(name = "Usuários", description = "Gerenciamento de usuários")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserResource {
 
     private final UserService service;

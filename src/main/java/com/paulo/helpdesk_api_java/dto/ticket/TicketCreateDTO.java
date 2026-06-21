@@ -16,10 +16,7 @@ public record TicketCreateDTO(
         String description,
 
         @NotNull(message = "A prioridade é obrigatória")
-        TicketPriority priority,
-
-        @NotNull(message = "O cliente é obrigatório")
-        Long clientId
+        TicketPriority priority
 
 ) {
 }

@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Duration;
 
 @Service
 public class TokenService {
@@ -19,14 +18,19 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(User user) {
+    @Value("${api.security.token.access-expiration-seconds:900}")
+    private long accessExpirationSeconds;
+
+    public String generateAccessToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             return JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
-                    .withExpiresAt(genExpirationDate())
+                    .withClaim("role", user.getRole().name())
+                    .withIssuedAt(Instant.now())
+                    .withExpiresAt(Instant.now().plus(Duration.ofSeconds(accessExpirationSeconds)))
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             throw new TokenGenerationException("Falha ao gerar o token de acesso.", e);
@@ -48,7 +52,7 @@ public class TokenService {
         }
     }
 
-    private Instant genExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    public long getAccessExpirationSeconds() {
+        return accessExpirationSeconds;
     }
 }

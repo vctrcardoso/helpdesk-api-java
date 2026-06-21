@@ -1,7 +1,8 @@
 package com.paulo.helpdesk_api_java.services;
 
+import com.paulo.helpdesk_api_java.dto.auth.AuthResponseDTO;
 import com.paulo.helpdesk_api_java.dto.auth.LoginDTO;
-import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
+import com.paulo.helpdesk_api_java.dto.auth.RegisterDTO;
 import com.paulo.helpdesk_api_java.entities.User;
 import com.paulo.helpdesk_api_java.repositories.UserRepository;
 import com.paulo.helpdesk_api_java.services.exceptions.ResourceConflictException;
@@ -23,15 +24,22 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private final TokenService tokenService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public AuthenticationService(
+            UserRepository repository,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            TokenService tokenService,
+            RefreshTokenService refreshTokenService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.refreshTokenService = refreshTokenService;
     }
 
-    public User register(UserCreateDTO data) {
+    public User register(RegisterDTO data) {
         if (repository.existsByEmailIgnoreCase(data.email())) {
             throw new ResourceConflictException(
                     "USER_EMAIL_ALREADY_EXISTS",
@@ -40,16 +48,37 @@ public class AuthenticationService {
 
         String encryptedPassword = passwordEncoder.encode(data.password());
 
-        User user = User.fromCreateDTO(data, encryptedPassword);
+        User user = User.fromRegisterDTO(data, encryptedPassword);
 
         return repository.save(user);
     }
 
-    public String login(LoginDTO data)
-    {
+    public AuthResponseDTO login(LoginDTO data) {
         var login = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
         Authentication authentication = this.authenticationManager.authenticate(login);
-        return tokenService.generateToken((User) Objects.requireNonNull(authentication.getPrincipal()));
+        User user = (User) Objects.requireNonNull(authentication.getPrincipal());
+        return issueTokens(user);
+    }
+
+    public AuthResponseDTO refresh(String refreshToken) {
+        RefreshTokenService.TokenRotation rotation = refreshTokenService.rotate(refreshToken);
+        return new AuthResponseDTO(
+                tokenService.generateAccessToken(rotation.user()),
+                rotation.refreshToken(),
+                "Bearer",
+                tokenService.getAccessExpirationSeconds());
+    }
+
+    public void logout(String refreshToken) {
+        refreshTokenService.revoke(refreshToken);
+    }
+
+    private AuthResponseDTO issueTokens(User user) {
+        return new AuthResponseDTO(
+                tokenService.generateAccessToken(user),
+                refreshTokenService.create(user),
+                "Bearer",
+                tokenService.getAccessExpirationSeconds());
     }
 
 }
