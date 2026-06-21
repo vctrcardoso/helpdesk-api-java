@@ -4,6 +4,7 @@ import com.paulo.helpdesk_api_java.dto.auth.LoginDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.entities.User;
 import com.paulo.helpdesk_api_java.repositories.UserRepository;
+import com.paulo.helpdesk_api_java.services.exceptions.ResourceConflictException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,8 +32,10 @@ public class AuthenticationService {
     }
 
     public User register(UserCreateDTO data) {
-        if (this.repository.findByEmail(data.email()) != null) {
-            return null;
+        if (repository.existsByEmailIgnoreCase(data.email())) {
+            throw new ResourceConflictException(
+                    "USER_EMAIL_ALREADY_EXISTS",
+                    "Já existe um usuário cadastrado com este e-mail.");
         }
 
         String encryptedPassword = passwordEncoder.encode(data.password());
@@ -46,7 +49,6 @@ public class AuthenticationService {
     {
         var login = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
         Authentication authentication = this.authenticationManager.authenticate(login);
-        System.out.println("Autenticado: " + authentication.getPrincipal());
         return tokenService.generateToken((User) Objects.requireNonNull(authentication.getPrincipal()));
     }
 

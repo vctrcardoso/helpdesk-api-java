@@ -3,6 +3,7 @@ package com.paulo.helpdesk_api_java.resources.exceptions;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 public class StandardError implements Serializable {
 
@@ -12,20 +13,24 @@ public class StandardError implements Serializable {
     private Instant timestamp;
     private Integer status;
     private String error;
+    private String code;
     private String message;
     private String path;
+    private List<ValidationError> validationErrors;
 
     public StandardError() {
 
     }
 
-    public StandardError(Instant timestamp, Integer status, String error, String message, String path) {
-        super();
+    public StandardError(Instant timestamp, Integer status, String error, String code, String message,
+                         String path, List<ValidationError> validationErrors) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
+        this.code = code;
         this.message = message;
         this.path = path;
+        this.validationErrors = validationErrors == null ? List.of() : List.copyOf(validationErrors);
     }
 
     public Instant getTimestamp() {
@@ -60,6 +65,14 @@ public class StandardError implements Serializable {
         this.message = message;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getPath() {
         return path;
     }
@@ -68,5 +81,11 @@ public class StandardError implements Serializable {
         this.path = path;
     }
 
+    public List<ValidationError> getValidationErrors() {
+        return validationErrors;
+    }
 
+    public void setValidationErrors(List<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors == null ? List.of() : List.copyOf(validationErrors);
+    }
 }

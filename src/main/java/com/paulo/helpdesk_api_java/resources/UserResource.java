@@ -3,6 +3,7 @@ package com.paulo.helpdesk_api_java.resources;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.dto.user.UserResponseDTO;
 import com.paulo.helpdesk_api_java.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,7 +34,7 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> insert(@RequestBody UserCreateDTO obj) {
+    public ResponseEntity<UserResponseDTO> insert(@RequestBody @Valid UserCreateDTO obj) {
         UserResponseDTO response = service.insert(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.id()).toUri();
         return ResponseEntity.created(uri).body(response);
@@ -41,7 +42,7 @@ public class UserResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> insert(@PathVariable Long id, @RequestBody UserCreateDTO obj) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid UserCreateDTO obj) {
         service.update(id, obj);
         return ResponseEntity.ok().build();
 

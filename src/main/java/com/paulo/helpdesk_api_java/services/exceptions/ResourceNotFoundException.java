@@ -7,8 +7,8 @@ public class ResourceNotFoundException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public ResourceNotFoundException(Object id) {
-        super("Usuário não encontrado " + id);
+    public ResourceNotFoundException(String resource, Object id) {
+        super("%s não encontrado(a) com identificador: %s".formatted(resource, id));
     }
 
 }

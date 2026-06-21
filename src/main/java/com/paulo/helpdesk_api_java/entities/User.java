@@ -1,5 +1,6 @@
 package com.paulo.helpdesk_api_java.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paulo.helpdesk_api_java.dto.user.UserCreateDTO;
 import com.paulo.helpdesk_api_java.entities.enums.UserRoles;
 import jakarta.persistence.*;
@@ -36,6 +37,14 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private UserRoles role;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "client")
+    private List<Ticket> ticketsCreated;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "attendant")
+    private List<Ticket> ticketsAssigned;
 
     public User() {
     }
@@ -87,4 +96,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    
 }
